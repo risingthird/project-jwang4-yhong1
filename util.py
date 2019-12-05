@@ -27,7 +27,8 @@ def parse_args():
     return opts
 def data_load(filename):
     data = pd.read_csv(filename).to_numpy(dtype=np.float32)
-    X, y = data[:, :-1], data[:, -1]
+    # Get rid of time feature to see what happens`
+    X, y = data[:, 1:-1], data[:, -1]
     X, y = shuffle(X, y)
     return X[:100000], y[:100000]
 
