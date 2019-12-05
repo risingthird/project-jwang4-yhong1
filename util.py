@@ -29,7 +29,7 @@ def data_load(filename):
     data = pd.read_csv(filename).to_numpy(dtype=np.float32)
     X, y = data[:, :-1], data[:, -1]
     X, y = shuffle(X, y)
-    return X[:1000], y[:1000]
+    return X[:100000], y[:100000]
 
 
 
