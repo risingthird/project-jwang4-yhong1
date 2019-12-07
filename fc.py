@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import confusion_matrix
 import util
 
 
@@ -26,16 +27,11 @@ def main():
     for train_index, test_index in skf.split(X, y):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
-        mean_pixel = X_train.mean(axis=(0, 1), keepdims=True)
-        std_pixel = X_train.std(axis=(0, 1), keepdims=True)
-        X_train = X_train - mean_pixel
-        X_train = X_train / std_pixel
-        X_test = X_test - mean_pixel
-        X_test = X_test / std_pixel
+        X_train, X_test = util.normalize(X_train, X_test)
         train_dset = tf.data.Dataset.from_tensor_slices((X_train, y_train)).batch(64, drop_remainder=False).shuffle(buffer_size=10000)
         test_dset = tf.data.Dataset.from_tensor_slices((X_test, y_test)).batch(64)
         model.fit(train_dset, epochs=10)
-        conf_mat = np.zeros((2, 2))
+        conf_mat = np.zeros((2, 2), dtype=int)
         for d, labels in test_dset:
             predictions = model(d)
             for i in range(len(d)):
